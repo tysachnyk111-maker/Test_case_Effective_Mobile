@@ -1,0 +1,21 @@
+version: "3.3"
+services:
+  backend:
+    build:
+      context: ./backend
+    expose:
+      - "8080"
+    restart: always
+  nginx:
+    build:
+      context: ./nginx
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "if command -v curl >/dev/null 2>&1; then curl -fsS http://127.0.0.1/ >/dev/null; elif command -v wget >/dev/null 2>&1; then wget -qO- http://127.0.0.1/ >/dev/null; else exit 1; fi"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
